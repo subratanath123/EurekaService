@@ -10,3 +10,8 @@ eureka:
         defaultZone: http://localhost:8761/eureka
     dashboard:
         enabled: true
+management:
+    endpoints:
+        web:
+            exposure:
+                include: busrefresh
