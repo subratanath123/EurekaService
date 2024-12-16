@@ -44,7 +44,7 @@ task buildAndRun {
 
     doLast {
         def imageName = "eurekaservice:latest" // Replace with your preferred image name
-        def containerName = "eurekaservice-container"
+        def containerName = "eurekaservice"
 
         // Build the Docker image
         println "Building Docker image..."
@@ -54,15 +54,20 @@ task buildAndRun {
 
         // Stop and remove any existing container with the same name
         println "Stopping and removing existing container (if any)..."
-        exec {
-            commandLine 'docker', 'rm', '-f', containerName
-            ignoreExitValue true // Ignore error if container does not exist
+        try {
+            exec {
+                commandLine 'docker', 'rm', '-f', containerName
+                ignoreExitValue true
+            }
+            println "Attempted to remove container: $containerName"
+        } catch (Exception e) {
+            println "Failed to remove container: $containerName. It might not exist."
         }
 
         // Run the Docker container
         println "Running Docker container..."
         exec {
-            commandLine 'docker', 'run', '-d', '--name', containerName, '-p', '8761:8761', imageName
+            commandLine 'docker', 'run', '-d', '--name', containerName, "--network", "microservice-network", "--network-alias", "eureka", '-p', '8761:8761', imageName
         }
     }
 }
