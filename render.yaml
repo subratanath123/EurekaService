@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: eureka-service
+    env: docker
+    plan: free
+    region: oregon
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: JAVA_OPTS
+        value: "-Xmx2048m -Xms512m -XX:+UseG1GC -XX:+UseContainerSupport"
+      - key: SPRING_PROFILES_ACTIVE
+        value: "prod"
+    buildCommand: docker build -t eureka-service .

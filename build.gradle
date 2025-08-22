@@ -65,6 +65,7 @@ task buildAndRun {
         }
 
         // Run the Docker container
+//        docker network create microservice-network
         println "Running Docker container..."
         exec {
             commandLine 'docker', 'run', '-d', '--name', containerName, "--network", "microservice-network", "--network-alias", "eureka", '-p', '8761:8761', imageName
