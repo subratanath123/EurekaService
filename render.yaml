@@ -2,7 +2,7 @@ services:
   - type: web
     name: eureka-service
     env: docker
-    plan: free
+    plan: professional
     region: oregon
     healthCheckPath: /actuator/health
     envVars:
