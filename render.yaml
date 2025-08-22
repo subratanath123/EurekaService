@@ -9,5 +9,7 @@ services:
       - key: JAVA_OPTS
         value: "-Xmx2048m -Xms512m -XX:+UseG1GC -XX:+UseContainerSupport"
       - key: SPRING_PROFILES_ACTIVE
-        value: "prod"
+        value: "dev"
+      - key: SERVER_ADDRESS
+        value: "0.0.0.0"
     buildCommand: docker build -t eureka-service .

@@ -1,16 +1,27 @@
 #http://localhost:8761/eureka
 server:
     port: 8761
+    address: 0.0.0.0
 eureka:
     client:
         registerWithEureka: false
         fetchRegistry: false
+        serviceUrl:
+            defaultZone: http://${server.address}:${server.port}/eureka/
     server:
         waitTimeInMsWhenSyncEmpty: 1
+        enable-self-preservation: false
+        eviction-interval-timer-in-ms: 1000
     dashboard:
         enabled: true
+    instance:
+        hostname: ${server.address}
+        prefer-ip-address: true
 management:
     endpoints:
         web:
             exposure:
-                include: busrefresh
+                include: health,info,busrefresh
+    endpoint:
+        health:
+            show-details: always
