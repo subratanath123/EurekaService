@@ -18,6 +18,9 @@ eureka:
         hostname: ${server.address}
         prefer-ip-address: true
 management:
+    metrics:
+        binders:
+            system: false
     endpoints:
         web:
             exposure:
