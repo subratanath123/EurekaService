@@ -1,43 +1,90 @@
 #!/bin/bash
 
-echo "🚀 Building and Deploying Eureka Service..."
+set -euo pipefail
 
-# Build the Docker image
-echo "📦 Building Docker image..."
-docker build -t eureka-service:latest .
+# ============================================================================
+# Configuration
+# ============================================================================
+readonly ENVIRONMENT="${1:-prod}"
+readonly COMPOSE_FILE="docker-compose.${ENVIRONMENT}.yml"
+readonly WORK_DIR="${PWD}"  # Use current working directory
+readonly HEALTH_CHECK_TIMEOUT=60
+readonly HEALTH_CHECK_INTERVAL=5
 
-if [ $? -eq 0 ]; then
-    echo "✅ Docker image built successfully!"
-    
-    # Stop and remove existing container if running
-    echo "🛑 Stopping existing container..."
-    docker stop eureka-service 2>/dev/null || true
-    docker rm eureka-service 2>/dev/null || true
-    
-    # Create network if it doesn't exist
-    echo "🌐 Creating network if needed..."
-    docker network create microservice-network 2>/dev/null || true
-    
-    # Run the new container
-    echo "🚀 Starting Eureka Service..."
-    docker run -d \
-        --name eureka-service \
-        --network microservice-network \
-        --network-alias eureka \
-        -p 8761:8761 \
-        -e SPRING_PROFILES_ACTIVE=prod \
-        eureka-service:latest
-    
-    if [ $? -eq 0 ]; then
-        echo "✅ Eureka Service deployed successfully!"
-        echo "🌐 Service available at: http://localhost:8761"
-        echo "📊 Health check: http://localhost:8761/actuator/health"
-        echo "📝 Container logs: docker logs -f eureka-service"
-    else
-        echo "❌ Failed to start container"
+# ============================================================================
+# Functions
+# ============================================================================
+
+log() {
+    echo "[$(date +'%Y-%m-%d %H:%M:%S')] $*"
+}
+
+log_error() {
+    echo "[ERROR] $*" >&2
+}
+
+log_success() {
+    echo "[SUCCESS] $*"
+}
+
+validate_environment() {
+    if [[ ! "$ENVIRONMENT" =~ ^(dev|qa|prod)$ ]]; then
+        log_error "Invalid environment: $ENVIRONMENT. Must be dev, qa, or prod"
         exit 1
     fi
-else
-    echo "❌ Docker build failed!"
-    exit 1
-fi
+}
+
+build_docker_image() {
+    log "Building Docker image..."
+    docker compose -f "${COMPOSE_FILE}" build
+}
+
+start_containers() {
+    log "Starting containers..."
+
+    docker compose -f "${COMPOSE_FILE}" up -d
+
+    log_success "Containers started"
+}
+
+show_status() {
+    echo ""
+    echo "=========================================="
+    log_success "Deployment completed!"
+    echo "  Environment: ${ENVIRONMENT}"
+    echo "  Compose file: ${COMPOSE_FILE}"
+    echo "  Working directory: ${WORK_DIR}"
+    echo "=========================================="
+    echo ""
+    
+    echo "Container status:"
+    $DOCKER_COMPOSE -f "${COMPOSE_FILE}" ps
+    echo ""
+
+    echo "Useful commands:"
+    echo "  View logs:    $DOCKER_COMPOSE -f ${COMPOSE_FILE} logs -f"
+    echo "  Stop:         $DOCKER_COMPOSE -f ${COMPOSE_FILE} down"
+    echo "  Restart:      $DOCKER_COMPOSE -f ${COMPOSE_FILE} restart"
+    echo "  Status:       $DOCKER_COMPOSE -f ${COMPOSE_FILE} ps"
+    echo ""
+}
+
+# ============================================================================
+# Main Deployment Flow
+# ============================================================================
+
+main() {
+    echo "=========================================="
+    echo "Docker Deployment"
+    echo "Environment: ${ENVIRONMENT}"
+    echo "=========================================="
+    echo ""
+
+    validate_environment
+    build_docker_image
+    start_containers
+
+}
+
+# Run main function
+main "$@"

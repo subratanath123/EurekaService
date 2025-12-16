@@ -4,9 +4,18 @@ plugins {
     id 'io.spring.dependency-management' version '1.1.2'
 }
 
-group = 'com.authorization.server'
-version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '17'
+java {
+    sourceCompatibility = '17'
+}
+
+jar {
+    enabled = false
+}
+
+bootJar {
+    archiveBaseName = 'EurekaService'
+    archiveVersion = ''
+}
 
 repositories {
     mavenCentral()

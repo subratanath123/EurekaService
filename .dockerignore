@@ -7,8 +7,11 @@
 *.iml
 .vscode
 
-# Build outputs
-build/
+# Build outputs (exclude build artifacts but allow libs for JAR)
+build/classes/
+build/generated/
+build/resources/
+build/tmp/
 .gradle/
 
 # Logs
