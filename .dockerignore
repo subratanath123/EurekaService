@@ -1,36 +1,4 @@
-# Git
-.git
-.gitignore
-
-# IDE
-.idea
-*.iml
-.vscode
-
-# Build outputs (exclude build artifacts but allow libs for JAR)
-build/classes/
-build/generated/
-build/resources/
-build/tmp/
-.gradle/
-
-# Logs
-*.log
-nohup.out
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Docker
-Dockerfile
-.dockerignore
-docker-compose.yml
-
-# Documentation
-README.md
-*.md
-
-# Temporary files
-*.tmp
-*.temp
+# The image only needs the prebuilt boot jar (see Dockerfile), so ignore everything
+# else to keep the build context tiny (no .git, .gradle, build/ intermediates, src, secrets).
+*
+!build/libs/EurekaService.jar

@@ -1,24 +1,21 @@
+# Project name must not be the directory name. Chat API, Eureka, and the
+# config service all deploy from a folder called "deployment"; the default
+# project name would make one compose up remove the others.
+name: jade-eureka
+
 services:
-  eureka-service:
+  eureka:
     build:
       context: .
-    container_name: eureka-service-prod
+    container_name: jade-eureka
     ports:
-      - "8761:8761"
+      - "0.0.0.0:8761:8761"
     environment:
       - SPRING_PROFILES_ACTIVE=prod
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    networks:
-      - chatbot-network
-    restart: unless-stopped
+    restart: always
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 60s
-
-networks:
-  chatbot-network:
-    driver: bridge
